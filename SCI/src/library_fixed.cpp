@@ -911,7 +911,7 @@ void TanH_thread(int32_t tid, uint64_t *A, uint64_t *B, int32_t dim,
 void TanH(int64_t I, int64_t J, int64_t scale_in, int64_t scale_out,
           int64_t bwA, int64_t bwB, uint64_t *A, uint64_t *B) {
 #ifdef LOG_LAYERWISE
-  std::cout << ctr++ << ". TanH (" << I << " x " << J << ")" << std::endl;
+  // std::cout << ctr++ << ". TanH (" << I << " x " << J << ")" << std::endl;
   INIT_TIMER;
   INIT_ALL_IO_DATA_SENT;
 #endif
@@ -937,8 +937,8 @@ void TanH(int64_t I, int64_t J, int64_t scale_in, int64_t scale_out,
 #ifdef LOG_LAYERWISE
   auto temp = TIMER_TILL_NOW;
   TanhTimeInMilliSec += temp;
-  std::cout << "Time in sec for current TanH = " << (temp / 1000.0)
-            << std::endl;
+  // std::cout << "Time in sec for current TanH = " << (temp / 1000.0)
+  //           << std::endl;
   uint64_t curComm;
   FIND_ALL_IO_TILL_NOW(curComm);
   TanhCommSent += curComm;
@@ -982,7 +982,7 @@ void Sqrt_thread(int32_t tid, uint64_t *A, uint64_t *B, int32_t dim,
 void Sqrt(int64_t I, int64_t J, int64_t scale_in, int64_t scale_out,
           int64_t bwA, int64_t bwB, bool inverse, uint64_t *A, uint64_t *B) {
 #ifdef LOG_LAYERWISE
-  std::cout << ctr++ << ". Sqrt (" << I << " x " << J << ")" << std::endl;
+  // std::cout << ctr++ << ". Sqrt (" << I << " x " << J << ")" << std::endl;
   INIT_TIMER;
   INIT_ALL_IO_DATA_SENT;
 #endif
@@ -1008,8 +1008,7 @@ void Sqrt(int64_t I, int64_t J, int64_t scale_in, int64_t scale_out,
 #ifdef LOG_LAYERWISE
   auto temp = TIMER_TILL_NOW;
   SqrtTimeInMilliSec += temp;
-  std::cout << "Time in sec for current Sqrt = " << (temp / 1000.0)
-            << std::endl;
+  // std::cout << "Time in sec for current Sqrt = " << (temp / 1000.0) << std::endl;
   uint64_t curComm;
   FIND_ALL_IO_TILL_NOW(curComm);
   SqrtCommSent += curComm;
@@ -1050,7 +1049,7 @@ void Exp(uint64_t *A, uint64_t *B, int32_t I, int32_t J, int32_t bwA,
 void Div(uint64_t *A, uint64_t *B, uint64_t *C, int32_t I, int32_t J,
          int32_t bwA, int32_t bwB, int32_t bwC, int32_t sA, int32_t sB,
          int32_t sC) {
-  math->div(I * J, A, B, C, bwA, bwB, bwC, sA, sB, sC, true, false);
+  math->div(I * J, A, B, C, bwA, bwB, bwC, sA, sB, sC, true, true);
 }
 
 void ArgMax(uint64_t *A, int32_t I, int32_t J, int32_t bwA, int32_t bw_index,

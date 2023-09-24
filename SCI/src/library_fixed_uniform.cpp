@@ -1686,7 +1686,7 @@ void StartComputation() {
             << std::endl;
 }
 
-void EndComputation() {
+void EndComputation(bool printInfo) {
   auto endTimer = std::chrono::high_resolution_clock::now();
   auto execTimeInMilliSec =
       std::chrono::duration_cast<std::chrono::milliseconds>(endTimer -
@@ -1695,19 +1695,19 @@ void EndComputation() {
   uint64_t totalComm = 0;
   for (int i = 0; i < num_threads; i++) {
     auto temp = iopackArr[i]->get_comm();
-    std::cout << "Thread i = " << i << ", total data sent till now = " << temp
+    if (printInfo) std::cout << "Thread i = " << i << ", total data sent till now = " << temp
               << std::endl;
     totalComm += (temp - comm_threads[i]);
   }
   uint64_t totalCommClient;
-  std::cout << "------------------------------------------------------\n";
-  std::cout << "------------------------------------------------------\n";
-  std::cout << "------------------------------------------------------\n";
+  if (printInfo) std::cout << "------------------------------------------------------\n";
+  if (printInfo) std::cout << "------------------------------------------------------\n";
+  std::cout << "--------------------------SCI-------------------------\n";
   std::cout << "Total time taken = " << execTimeInMilliSec
             << " milliseconds.\n";
-  std::cout << "Total data sent = " << (totalComm / (1.0 * (1ULL << 20)))
+  if (printInfo) std::cout << "Total data sent = " << (totalComm / (1.0 * (1ULL << 20)))
             << " MiB." << std::endl;
-  std::cout << "Number of rounds = " << iopack->get_rounds() - num_rounds
+  if (printInfo) std::cout << "Number of rounds = " << iopack->get_rounds() - num_rounds
             << std::endl;
   if (party == SERVER) {
     io->recv_data(&totalCommClient, sizeof(uint64_t));
@@ -1716,88 +1716,90 @@ void EndComputation() {
               << " MiB." << std::endl;
   } else if (party == CLIENT) {
     io->send_data(&totalComm, sizeof(uint64_t));
-    std::cout << "Total comm (sent+received) = (see SERVER OUTPUT)"
+    if (printInfo) std::cout << "Total comm (sent+received) = (see SERVER OUTPUT)"
               << std::endl;
   }
-  std::cout << "------------------------------------------------------\n";
+  std::cout << "--------------------------SCI-------------------------\n";
 
 #ifdef LOG_LAYERWISE
-  std::cout << "Total time in Conv = " << (ConvTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in MatMul = " << (MatMulTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in BatchNorm = " << (BatchNormInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in Truncation = "
-            << (TruncationTimeInMilliSec / 1000.0) << " seconds." << std::endl;
-  std::cout << "Total time in Relu = " << (ReluTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in MaxPool = " << (MaxpoolTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in AvgPool = " << (AvgpoolTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in ArgMax = " << (ArgMaxTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in MatAdd = " << (MatAddTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in MatAddBroadCast = "
-            << (MatAddBroadCastTimeInMilliSec / 1000.0) << " seconds."
-            << std::endl;
-  std::cout << "Total time in MulCir = " << (MulCirTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in ScalarMul = "
-            << (ScalarMulTimeInMilliSec / 1000.0) << " seconds." << std::endl;
-  std::cout << "Total time in Sigmoid = " << (SigmoidTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in Tanh = " << (TanhTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in Sqrt = " << (SqrtTimeInMilliSec / 1000.0)
-            << " seconds." << std::endl;
-  std::cout << "Total time in NormaliseL2 = "
-            << (NormaliseL2TimeInMilliSec / 1000.0) << " seconds." << std::endl;
-  std::cout << "------------------------------------------------------\n";
-  std::cout << "Conv data sent = " << ((ConvCommSent) / (1.0 * (1ULL << 20)))
-            << " MiB." << std::endl;
-  std::cout << "MatMul data sent = "
-            << ((MatMulCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "BatchNorm data sent = "
-            << ((BatchNormCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "Truncation data sent = "
-            << ((TruncationCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "Relu data sent = " << ((ReluCommSent) / (1.0 * (1ULL << 20)))
-            << " MiB." << std::endl;
-  std::cout << "Maxpool data sent = "
-            << ((MaxpoolCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "Avgpool data sent = "
-            << ((AvgpoolCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "ArgMax data sent = "
-            << ((ArgMaxCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "MatAdd data sent = "
-            << ((MatAddCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "MatAddBroadCast data sent = "
-            << ((MatAddBroadCastCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "MulCir data sent = "
-            << ((MulCirCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "Sigmoid data sent = "
-            << ((SigmoidCommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "Tanh data sent = " << ((TanhCommSent) / (1.0 * (1ULL << 20)))
-            << " MiB." << std::endl;
-  std::cout << "Sqrt data sent = " << ((SqrtCommSent) / (1.0 * (1ULL << 20)))
-            << " MiB." << std::endl;
-  std::cout << "NormaliseL2 data sent = "
-            << ((NormaliseL2CommSent) / (1.0 * (1ULL << 20))) << " MiB."
-            << std::endl;
-  std::cout << "------------------------------------------------------\n";
+  if (printInfo) {
+    std::cout << "Total time in Conv = " << (ConvTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in MatMul = " << (MatMulTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in BatchNorm = " << (BatchNormInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in Truncation = "
+              << (TruncationTimeInMilliSec / 1000.0) << " seconds." << std::endl;
+    std::cout << "Total time in Relu = " << (ReluTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in MaxPool = " << (MaxpoolTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in AvgPool = " << (AvgpoolTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in ArgMax = " << (ArgMaxTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in MatAdd = " << (MatAddTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in MatAddBroadCast = "
+              << (MatAddBroadCastTimeInMilliSec / 1000.0) << " seconds."
+              << std::endl;
+    std::cout << "Total time in MulCir = " << (MulCirTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in ScalarMul = "
+              << (ScalarMulTimeInMilliSec / 1000.0) << " seconds." << std::endl;
+    std::cout << "Total time in Sigmoid = " << (SigmoidTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in Tanh = " << (TanhTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in Sqrt = " << (SqrtTimeInMilliSec / 1000.0)
+              << " seconds." << std::endl;
+    std::cout << "Total time in NormaliseL2 = "
+              << (NormaliseL2TimeInMilliSec / 1000.0) << " seconds." << std::endl;
+    std::cout << "------------------------------------------------------\n";
+    std::cout << "Conv data sent = " << ((ConvCommSent) / (1.0 * (1ULL << 20)))
+              << " MiB." << std::endl;
+    std::cout << "MatMul data sent = "
+              << ((MatMulCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "BatchNorm data sent = "
+              << ((BatchNormCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "Truncation data sent = "
+              << ((TruncationCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "Relu data sent = " << ((ReluCommSent) / (1.0 * (1ULL << 20)))
+              << " MiB." << std::endl;
+    std::cout << "Maxpool data sent = "
+              << ((MaxpoolCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "Avgpool data sent = "
+              << ((AvgpoolCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "ArgMax data sent = "
+              << ((ArgMaxCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "MatAdd data sent = "
+              << ((MatAddCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "MatAddBroadCast data sent = "
+              << ((MatAddBroadCastCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "MulCir data sent = "
+              << ((MulCirCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "Sigmoid data sent = "
+              << ((SigmoidCommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "Tanh data sent = " << ((TanhCommSent) / (1.0 * (1ULL << 20)))
+              << " MiB." << std::endl;
+    std::cout << "Sqrt data sent = " << ((SqrtCommSent) / (1.0 * (1ULL << 20)))
+              << " MiB." << std::endl;
+    std::cout << "NormaliseL2 data sent = "
+              << ((NormaliseL2CommSent) / (1.0 * (1ULL << 20))) << " MiB."
+              << std::endl;
+    std::cout << "------------------------------------------------------\n";
+  }
   if (party == SERVER) {
     uint64_t ConvCommSentClient = 0;
     uint64_t MatMulCommSentClient = 0;
@@ -1833,66 +1835,68 @@ void EndComputation() {
     io->recv_data(&SqrtCommSentClient, sizeof(uint64_t));
     io->recv_data(&NormaliseL2CommSentClient, sizeof(uint64_t));
 
-    std::cout << "Conv data (sent+received) = "
-              << ((ConvCommSent + ConvCommSentClient) / (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "MatMul data (sent+received) = "
-              << ((MatMulCommSent + MatMulCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "BatchNorm data (sent+received) = "
-              << ((BatchNormCommSent + BatchNormCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Truncation data (sent+received) = "
-              << ((TruncationCommSent + TruncationCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Relu data (sent+received) = "
-              << ((ReluCommSent + ReluCommSentClient) / (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Maxpool data (sent+received) = "
-              << ((MaxpoolCommSent + MaxpoolCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Avgpool data (sent+received) = "
-              << ((AvgpoolCommSent + AvgpoolCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "ArgMax data (sent+received) = "
-              << ((ArgMaxCommSent + ArgMaxCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "MatAdd data (sent+received) = "
-              << ((MatAddCommSent + MatAddCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "MatAddBroadCast data (sent+received) = "
-              << ((MatAddBroadCastCommSent + MatAddBroadCastCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "MulCir data (sent+received) = "
-              << ((MulCirCommSent + MulCirCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "ScalarMul data (sent+received) = "
-              << ((ScalarMulCommSent + ScalarMulCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Sigmoid data (sent+received) = "
-              << ((SigmoidCommSent + SigmoidCommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Tanh data (sent+received) = "
-              << ((TanhCommSent + TanhCommSentClient) / (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "Sqrt data (sent+received) = "
-              << ((SqrtCommSent + SqrtCommSentClient) / (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
-    std::cout << "NormaliseL2 data (sent+received) = "
-              << ((NormaliseL2CommSent + NormaliseL2CommSentClient) /
-                  (1.0 * (1ULL << 20)))
-              << " MiB." << std::endl;
+    if (printInfo) {
+      std::cout << "Conv data (sent+received) = "
+                << ((ConvCommSent + ConvCommSentClient) / (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "MatMul data (sent+received) = "
+                << ((MatMulCommSent + MatMulCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "BatchNorm data (sent+received) = "
+                << ((BatchNormCommSent + BatchNormCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Truncation data (sent+received) = "
+                << ((TruncationCommSent + TruncationCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Relu data (sent+received) = "
+                << ((ReluCommSent + ReluCommSentClient) / (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Maxpool data (sent+received) = "
+                << ((MaxpoolCommSent + MaxpoolCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Avgpool data (sent+received) = "
+                << ((AvgpoolCommSent + AvgpoolCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "ArgMax data (sent+received) = "
+                << ((ArgMaxCommSent + ArgMaxCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "MatAdd data (sent+received) = "
+                << ((MatAddCommSent + MatAddCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "MatAddBroadCast data (sent+received) = "
+                << ((MatAddBroadCastCommSent + MatAddBroadCastCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "MulCir data (sent+received) = "
+                << ((MulCirCommSent + MulCirCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "ScalarMul data (sent+received) = "
+                << ((ScalarMulCommSent + ScalarMulCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Sigmoid data (sent+received) = "
+                << ((SigmoidCommSent + SigmoidCommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Tanh data (sent+received) = "
+                << ((TanhCommSent + TanhCommSentClient) / (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "Sqrt data (sent+received) = "
+                << ((SqrtCommSent + SqrtCommSentClient) / (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+      std::cout << "NormaliseL2 data (sent+received) = "
+                << ((NormaliseL2CommSent + NormaliseL2CommSentClient) /
+                    (1.0 * (1ULL << 20)))
+                << " MiB." << std::endl;
+    }
 
 #ifdef WRITE_LOG
     std::string file_addr = "results-Porthos2PC-server.csv";
@@ -2003,7 +2007,7 @@ void ElemWiseSecretSharedVectorMult(int32_t size, intType *inArr,
   INIT_TIMER;
 #endif
   static int batchNormCtr = 1;
-  std::cout << "Starting fused batchNorm #" << batchNormCtr << std::endl;
+  // std::cout << "Starting fused batchNorm #" << batchNormCtr << std::endl;
   batchNormCtr++;
 
 #ifdef SCI_OT

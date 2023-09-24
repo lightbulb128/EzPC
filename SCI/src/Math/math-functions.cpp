@@ -156,9 +156,19 @@ void MathFunctions::div(int32_t dim, uint64_t *nm, uint64_t *dn, uint64_t *out,
 
   // out_precision = iters * (2*m + 2)
   int32_t m, iters;
-  m = (s_out <= 18 ? ceil((s_out - 2) / 2.0)
-                   : ceil((ceil(s_out / 2.0) - 2) / 2.0));
-  iters = (s_out <= 18 ? 0 : 1);
+  if (s_out <= 18) {
+    m = ceil((s_out - 2) / 2.0);
+    iters = 0;
+  } else if (s_out <= 26) {
+    m = ceil((ceil(s_out / 2.0) - 2) / 2.0);
+    iters = 1;
+  } else {
+    m = ceil((ceil(ceil(s_out / 2.0) / 2.0) - 2) / 2.0);
+    iters = 2;
+  }
+  // m = (s_out <= 18 ? ceil((s_out - 2) / 2.0)
+  //                  : ceil((ceil(s_out / 2.0) - 2) / 2.0));
+  // iters = (s_out <= 18 ? 0 : 1);
 
   int32_t s_tmp_dn;
   int32_t bw_adjust;
@@ -605,9 +615,12 @@ void MathFunctions::sqrt(int32_t dim, uint64_t *x, uint64_t *y, int32_t bw_x,
   if (s_y <= 14) {
     m = ceil(s_y / 2.0);
     iters = 1;
-  } else {
+  } else if (s_y <= 24) {
     m = ceil((ceil(s_y / 2.0)) / 2.0);
     iters = 2;
+  } else {
+    m = ceil(ceil(ceil(s_y / 2.0) / 2.0) / 2.0);
+    iters = 3;
   }
   assert(m <= KKOT_LIMIT);
   int32_t bw_adjust = bw_x - 1;

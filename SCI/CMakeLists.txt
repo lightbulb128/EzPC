@@ -3,6 +3,7 @@ cmake_minimum_required (VERSION 3.3.2)
 project (SCI)
 set(NAME "SCI")
 
+add_compile_options("-fPIC")
 
 option(NO_REVEAL_OUTPUT "Only output secret shares after 2PC" OFF)
 message(STATUS "Option: NO_REVEAL_OUTPUT = ${NO_REVEAL_OUTPUT}")
@@ -42,3 +43,7 @@ configure_package_config_file(
 install(FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SCIConfig.cmake"
         DESTINATION lib/cmake/SCI)
+
+
+add_subdirectory(extern/pybind11)
+add_subdirectory(pybind-test)
