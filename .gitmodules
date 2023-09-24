@@ -4,6 +4,3 @@
 [submodule "CrypTFlow2/extern/eigen"]
 	path = SCI/extern/eigen
 	url = https://gitlab.com/libeigen/eigen
-[submodule "SCI/extern/pybind11"]
-	path = SCI/extern/pybind11
-	url = https://github.com/pybind/pybind11.git
